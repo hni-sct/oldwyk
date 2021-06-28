@@ -1,0 +1,12 @@
+[submodule "rtl/pulpino"]
+	path = rtl/pulpino
+	url = https://github.com/hni-sct/pulpino.git
+[submodule "ips"]
+	path = ips
+	url = https://github.com/hni-sct/pdk-ips.git
+[submodule "tools/hni-cad-plugins"]
+	path = tools/hni-cad-plugins
+	url = https://github.com/hni-sct/hni-cad-plugins.git
+[submodule "tools/hammer"]
+	path = tools/hammer
+	url = https://github.com/ucb-bar/hammer.git
