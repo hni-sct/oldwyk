@@ -1,0 +1,223 @@
+# Core configuration options and defaults for hammer-vlsi.
+# The values specified in this file are the defaults.
+# e.g. foo: "bar" in this file means that the default setting for foo is "bar".
+
+vlsi.core:
+
+  # Technology to use. hammer-vlsi will read this and load the appropriate technology libraries.
+  technology: "tsmc65nm-lp-12t9m"
+
+  # Technology node dimension (nm) to use.
+  # Some tools change what they do as this changes.
+  # TODO: move this to vlsi.technology
+  node: 65
+
+# General VLSI inputs.
+# These will vary per run of hammer-vlsi.
+vlsi.inputs:
+  dont_use_list: [
+  ]
+  # Muli-mode multi-corner setups, overrides supplies
+  # MMMC struct members:
+  # name (str) - name of the corner.
+  # type (str) - One of the following:
+  # - "setup" (corner used for setup timing)
+  # - "hold" (corner used for hold timing)
+  # - "extra" (misc. corner potentially used for power analysis
+  # voltage (str) - voltage of the corner should match tech json
+  # temp (str) - temperature of the corner should match tech json
+  mmmc_corners: [
+      {name: "wc", type: "setup", voltage: "1.08 V", temp: "125 C"},
+      {name: "bc", type: "hold", voltage: "1.32 V", temp: "-40 C"}
+  ]
+
+  # rc_corner to consider
+  # RC struct members:
+  # name (str) - name of the corner.
+  # type (str) - One of the following:
+  # temp (str) - temperature of the corner should match tech json
+  rc_corners: [
+    {name: "rc_max", type: "max", temp: "125 C"},
+    {name: "rc_min", type: "min", temp: "-40 C"},
+    {name: "rc_typical", type: "typical", temp: "25 C"}
+  ]
+
+  # Clock ports of the top-level module.
+  # Clock struct members:
+  # name (str) - Name of the clock port.
+  # period (TimeValue) - Clock port period. e.g. "1 ns", "5ns". Default units: ns
+  # port (str) - Optional. If specified, this is the RTL path to the clock. Otherwise, the path is the same as the name.
+  # uncertainty (TimeValue) - Optional. Clock uncertainty. e.g. "1 ns", "5ns". Default units: ns
+  # latency (TimeValue)
+  # transistion (TimeValue)
+  clocks: [
+      {name: "clk", period: "15 ns", port: "clk", uncertainty: "0.2 ns", latency: "0.3 ns", transition: "0.2 ns"},
+      {name: "spi_clk_i", period: "40 ns", port: "spi_clk_i", uncertainty: "0.3 ns", latency: "0.3 ns", transition: "0.2 ns"},
+      {name: "tck_i", period: "40 ns", port: "tck_i", uncertainty: "0.3 ns", latency: "0.3 ns", transition: "0.2 ns"}
+  ]
+
+  delays: [
+    # spi slave clk
+    {name: "spi_cs_i"   , clock: "spi_clk_i", direction: "input" , corner: "max", delay: "2"},
+    {name: "spi_cs_i "  , clock: "spi_clk_i", direction: "input" , corner: "min", delay: "1.5"},
+    {name: "spi_sdo0_o" , clock: "spi_clk_i", direction: "output", corner: "max", delay: "6"},
+    {name: "spi_sdo0_o" , clock: "spi_clk_i", direction: "output", corner: "min", delay: "1.8"},
+    {name: "spi_sdi0_i" , clock: "spi_clk_i", direction: "input" , corner: "max", delay: "2"},
+    {name: "spi_sdi0_i" , clock: "spi_clk_i", direction: "input" , corner: "min", delay: "1.5"},
+
+    # core clk
+    {name: "spi_master_clk_o"  , clock: "clk", direction: "output", corner: "max", delay: "6"},
+    {name: "spi_master_clk_o"  , clock: "clk", direction: "output", corner: "min", delay: "1.8"},
+    {name: "spi_master_csn0_o" , clock: "clk", direction: "output", corner: "max", delay: "6"},
+    {name: "spi_master_csn0_o" , clock: "clk", direction: "output", corner: "min", delay: "1.8"},
+    {name: "spi_master_sdo0_o" , clock: "clk", direction: "output", corner: "max", delay: "6"},
+    {name: "spi_master_sdo0_o" , clock: "clk", direction: "output", corner: "min", delay: "1.8"},
+    {name: "spi_master_sdi0_i" , clock: "clk", direction: "input" , corner: "max", delay: "2"},
+    {name: "spi_master_sdi0_i" , clock: "clk", direction: "input" , corner: "min", delay: "1.5"},
+    {name: "uart_tx"           , clock: "clk", direction: "output", corner: "max", delay: "6"},
+    {name: "uart_tx"           , clock: "clk", direction: "output", corner: "min", delay: "1.8"},
+    {name: "uart_rx"           , clock: "clk", direction: "input" , corner: "max", delay: "2"},
+    {name: "uart_rx"           , clock: "clk", direction: "input" , corner: "min", delay: "1.5"},
+    {name: "uart_rts"          , clock: "clk", direction: "output", corner: "max", delay: "6"},
+    {name: "uart_rts"          , clock: "clk", direction: "output", corner: "min", delay: "1.8"},
+    {name: "uart_dtr"          , clock: "clk", direction: "output", corner: "max", delay: "6"},
+    {name: "uart_dtr"          , clock: "clk", direction: "output", corner: "min", delay: "1.8"},
+    {name: "uart_cts"          , clock: "clk", direction: "input" , corner: "max", delay: "2"},
+    {name: "uart_cts"          , clock: "clk", direction: "input" , corner: "min", delay: "1.5"},
+    {name: "uart_dsr"          , clock: "clk", direction: "input" , corner: "max", delay: "2"},
+    {name: "uart_dsr"          , clock: "clk", direction: "input" , corner: "min", delay: "1.5"},
+    {name: "gpio"              , clock: "clk", direction: "output", corner: "max", delay: "6"},
+    {name: "gpio"              , clock: "clk", direction: "output", corner: "min", delay: "1.8"},
+    {name: "gpio"              , clock: "clk", direction: "input" , corner: "max", delay: "2"},
+    {name: "gpio"              , clock: "clk", direction: "input" , corner: "min", delay: "1.5"},
+
+    # jtag clk
+    {name: "trstn_i"           , clock: "clk", direction: "input" , corner: "max", delay: "2"},
+    {name: "trstn_i"           , clock: "clk", direction: "input" , corner: "min", delay: "1.5"},
+    {name: "tms_i"             , clock: "clk", direction: "input" , corner: "max", delay: "2"},
+    {name: "tms_i"             , clock: "clk", direction: "input" , corner: "min", delay: "1.5"},
+    {name: "tdi_i"             , clock: "clk", direction: "input" , corner: "max", delay: "2"},
+    {name: "tdi_i"             , clock: "clk", direction: "input" , corner: "min", delay: "1.5"},
+    {name: "tdo_o"             , clock: "clk", direction: "output", corner: "max", delay: "6"},
+    {name: "tdo_o"             , clock: "clk", direction: "output", corner: "min", delay: "1.8"},
+
+  ]
+
+  custom_sdc_constraints: [
+    "set_false_path -from [get_ports rst_n]",
+    "set_false_path -through pad_rst_n_0/C",
+    "set_false_path -fall_through top_i/clk_rst_gen_i/i_rst_gen_soc/rst_no",
+    "set_false_path -through pad_trstn_i_0/C",
+    "set_false_path -from [get_ports trstn_i]",
+  ]
+
+  placement_constraints: [
+    {
+      path: "top_i/core_region_i/instr_mem/sp_ram_wrap_i/sram_ip",
+      type: "hardmacro",
+      x: 763.86,
+      y: 354.515,
+      width: 596.14,
+      height: 290.485,
+      orientation: "R0",
+    },
+    {
+      path: "top_i/core_region_i/data_mem/sram_ip",
+      type: "hardmacro",
+      x: 140.0,
+      y: 354.515,
+      width: 596.14,
+      height: 290.485,
+      orientation: "R0",
+    },
+    {
+      path: "toplevel",
+      type: "toplevel",
+      x: 0.0,
+      y: 0.0,
+      width: 1500.0,
+      height: 785.0,
+      margins: {
+          left: 20.0,
+          right: 20.0,
+          top: 20.0,
+          bottom: 20.0
+      }
+    }
+  ]
+
+  placement_halos: [
+    {
+      path: "top_i/core_region_i/instr_mem/sp_ram_wrap_i/sram_ip",
+      halo: { "left": 28, "right": 0, "top": 0, "bottom": 20}
+    },
+    {
+      path: "top_i/core_region_i/data_mem/sram_ip",
+      halo: { "left": 0, "right": 28, "top": 0, "bottom": 20}
+    }
+  ]
+
+
+  # Default output pin load capacitance.
+  # Default: 1pF
+  default_output_load: 2.0
+
+  # List of output load constraints.
+  # Each item in the list should be a struct with the following members:
+  # name (str) - Name of the output load (e.g. io_out)
+  # load (float) - Output load capacitance in pF.
+  output_loads: []
+
+  # Default output pin load capacitance.
+  # Default: 1pF
+  default_input_drive: 0.18
+
+  # List of input drive constraints.
+  # Each item in the list should be a struct with the following members:
+  # name (str) - Name of the input drive (e.g. io_in)
+  # drive (float) - Output drive capacitance in pF.
+  input_drive: []
+
+# Specific inputs for the synthesis tool.
+# These inputs are the generic inputs; specific tools ("CAD junk") may require
+# additional inputs.
+# They will vary per run of hammer-vlsi.
+synthesis.inputs:
+  effort: "medium"
+
+
+# Specific inputs for the place and route tool.
+# These inputs are the generic inputs; specific tools ("CAD junk") may require
+# additional inputs.
+# They will vary per run of hammer-vlsi.
+par.inputs:
+  # Optional: io pad layout file
+  # Leave as null to not use.
+  io_pad_layout: "${project.path}/floorplan/tsmc65.save.io"
+  io_pad_layout_meta: "subst"
+
+
+  floorplan: {
+      aspect: 0.75,
+      util: 0.85,
+      dist_left: 20.0,
+      dist_right: 20.0,
+      dist_top: 20.0,
+      dist_bottom: 20.0,
+  }
+
+  power_rings: {
+    width: 5,
+    spacing: 3.0,
+    number: 1,
+    layer_horizontal: 7,
+    layer_vertical: 8
+  }
+  # Optional: custom tcl script to place the macros
+
+  effort: "standard"
+
+lvs.calibre:
+    # Add rules here for black boxes
+    extra_rules: ""
+

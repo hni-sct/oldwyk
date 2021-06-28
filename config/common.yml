@@ -1,0 +1,90 @@
+vlsi.core:
+
+  technology_path: ["${project.path}/tools/hammer-hni-cad-plugin/technology"]
+  technology_path_meta: "subst"
+
+  synthesis_tool_path: ["${project.path}/tools/hammer-hni-cad-plugin/synthesis"]
+  synthesis_tool_path_meta: "subst"
+
+  par_tool_path: ["${project.path}/tools/hammer-hni-cad-plugin/par"]
+  par_tool_path_meta: "subst"
+
+  drc_tool_path: ["${project.path}/tools/hammer-hni-cad-plugin/drc"]
+  drc_tool_path_meta: "subst"
+
+  lvs_tool_path: ["${project.path}/tools/hammer-hni-cad-plugin/lvs"]
+  lvs_tool_path_meta: "subst"
+
+  sim_tool_path: ["${project.path}/tools/hammer-hni-cad-plugin/sim"]
+  sim_tool_path_meta: "subst"
+
+  # shell-gen tool to use.
+  shellgen_tool: "nop"
+  # Synthesis tool to use.
+  # Currently we can choose from a selection of built-in tools which hammer-vlsi supports.
+  synthesis_tool: "dc"
+
+  # Place and route tool to use.
+  par_tool: "innovus"
+
+  # DRC tool to use.
+  drc_tool: "calibre"
+
+  # LVS tool to use.
+  lvs_tool: "calibre"
+
+  sim_tool: "questasim"
+
+  # Maximum threads to use in a CAD tool invocation.
+  max_threads: 8
+
+synthesis.inputs:
+    include_paths_meta: "subst"
+    include_paths: [
+        "${project.path}/rtl/pulpino/rtl/includes",
+        "${project.path}/rtl/pulpino/ips/zero-riscy/include",
+        "${project.path}/rtl/pulpino/ips/apb/apb_event_unit/include"
+    ]
+
+sim.inputs:
+    tb_files: [
+        "${project.path}/rtl/pulpino/tb/pkg_spi.sv",
+        "${project.path}/rtl/pulpino/tb/if_spi_slave.sv",
+        "${project.path}/rtl/pulpino/tb/uart.sv",
+        "${project.path}/rtl/pulpino/tb/i2c_eeprom_model.sv",
+        "${project.path}/rtl/pulpino/tb/tb_wrap_ps.sv",
+        "${project.path}/rtl/pulpino/tb/tb_wrap_pl.sv",
+    ]
+    tb_files_meta: "subst"
+
+    options: [
+        "+incdir+${project.path}/rtl/pulpino/tb/",
+        "+incdir+${project.path}/rtl/pulpino/rtl/includes/"
+    ]
+    options_meta: "subst"
+
+    execution_flags: [
+        "+nowarnTRAN",
+        "+nowarnTSCALE",
+        "+nowarnTFMPC",
+        "+MEMLOAD=PRELOAD",
+        "+l2_imem=$IMEM",
+        "+l2_dmem=$DMEM",
+        "-t ps",
+        "-gUSE_ZERO_RISCY=1",
+        "-gRISCY_RV32F=0",
+        "-gZERO_RV32M=0",
+        "-gZERO_RV32E=1"
+    ]
+    tb_dut: "tb_wrap_ps"
+
+    benchmarks: [
+        "${project.path}/rtl/pulpino/sw/build/apps/helloworld"
+    ]
+    benchmarks_meta: "subst"
+
+
+drc.inputs:
+    mode: "normal"
+
+par.inputs.gds_merge: true

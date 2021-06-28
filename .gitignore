@@ -1,0 +1,11 @@
+*.log
+log/
+output.json
+project.yml
+*.json
+syn/
+shell/
+par/
+drc/
+lvs/
+sim/
